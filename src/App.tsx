@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react";
-
+import {
+  Button,
+  CloseButton,
+  Dialog,
+  Field,
+  Input,
+  Portal,
+} from "@chakra-ui/react";
 import "./App.css";
 import {
   getAllRecords,
@@ -11,8 +17,8 @@ import { Record } from "./domain/record";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
 type Inputs = {
-  example: string;
-  exampleRequired: string;
+  title: string;
+  time: number;
 };
 function App() {
   const [records, setRecords] = useState<Record[]>([]);
@@ -20,6 +26,8 @@ function App() {
   const [studyTime, setStudyTime] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
     const getRecords = async () => {
       setIsLoading(true); // ①読み込み開始！
@@ -32,34 +40,40 @@ function App() {
   const {
     register,
     handleSubmit,
-    watch,
+    reset,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
-
-  console.log(watch("example")); // watch input value by passing the name of it
-
-  const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setStudyTitle(event.target.value);
-  const onChangeTime = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setStudyTime(Number(event.target.value));
-
-  const onClickAdd = async () => {
-    if (studyTitle === "" || studyTime === 0) {
-      setError("入力されていない項目があります");
-      return;
-    }
-
-    await addRecord(studyTitle, Number(studyTime));
-
-    // データベースから最新のデータを再取得
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    await addRecord(data.title, data.time);
     const updatedRecords = await getAllRecords();
     setRecords(updatedRecords);
-
+    reset();
+    setIsOpen(false);
     setStudyTitle("");
     setStudyTime(0);
     setError("");
   };
+  // const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
+  //   setStudyTitle(event.target.value);
+  // const onChangeTime = (event: React.ChangeEvent<HTMLInputElement>) =>
+  //   setStudyTime(Number(event.target.value));
+
+  // const onClickAdd = async () => {
+  //   if (studyTitle === "" || studyTime === 0) {
+  //     setError("入力されていない項目があります");
+  //     return;
+  //   }
+
+  //   await addRecord(studyTitle, Number(studyTime));
+
+  //   // データベースから最新のデータを再取得
+  //   const updatedRecords = await getAllRecords();
+  //   setRecords(updatedRecords);
+
+  //   setStudyTitle("");
+  //   setStudyTime(0);
+  //   setError("");
+  // };
 
   const onClickDelete = async (id) => {
     await deleteRecord(id);
@@ -76,15 +90,15 @@ function App() {
 
   return (
     <>
-      <Dialog.Root>
+      <Dialog.Root open={isOpen} onOpenChange={({ open }) => setIsOpen(open)}>
         <div className="App">
           <h1 data-testid="title">学習記録一覧</h1>
           <p>合計学習時間：{totalTime}/1000(h)</p>
 
           <p> 最近の記録</p>
           <Dialog.Trigger asChild>
-            <Button variant="outline" size="sm">
-              記録する
+            <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+              新規登録
             </Button>
           </Dialog.Trigger>
 
@@ -123,10 +137,10 @@ function App() {
           <Dialog.Positioner>
             <Dialog.Content>
               <Dialog.Header>
-                <Dialog.Title>学習記録を登録</Dialog.Title>
+                <Dialog.Title>新規登録</Dialog.Title>
               </Dialog.Header>
               <Dialog.Body>
-                <div>
+                {/* <div>
                   <p>◾️学習内容</p>
                   <input
                     data-testid="input-title"
@@ -143,26 +157,41 @@ function App() {
                     onChange={onChangeTime}
                   />
                   時間
-                </div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  {/* register your input into the hook by invoking the "register" function */}
-                  <input defaultValue="test" {...register("example")} />
+                </div> */}
+                <form id="study-form" onSubmit={handleSubmit(onSubmit)}>
+                  <Field.Root invalid={!!errors.title}>
+                    <Field.Label>学習内容</Field.Label>
+                    <Input
+                      {...register("title", {
+                        required: "内容の入力は必須です",
+                      })}
+                    />
+                    <Field.ErrorText>{errors.title?.message}</Field.ErrorText>
+                  </Field.Root>
 
-                  {/* include validation with required or other standard HTML validation rules */}
-                  <input {...register("exampleRequired", { required: true })} />
-                  {/* errors will return when field validation fails  */}
-                  {errors.exampleRequired && (
-                    <span>This field is required</span>
-                  )}
-
-                  <input type="submit" />
+                  <Field.Root invalid={!!errors.time}>
+                    <Field.Label>学習時間</Field.Label>
+                    <Input
+                      type="number"
+                      {...register("time", {
+                        required: "時間の入力は必須です",
+                        min: {
+                          value: 0,
+                          message: "時間は0以上である必要があります",
+                        },
+                      })}
+                    />
+                    <Field.ErrorText>{errors.time?.message}</Field.ErrorText>
+                  </Field.Root>
                 </form>
               </Dialog.Body>
               <Dialog.Footer>
                 <Dialog.ActionTrigger asChild>
                   <Button variant="outline">キャンセル</Button>
                 </Dialog.ActionTrigger>
-                <Button>登録する</Button>
+                <Button type="submit" form="study-form">
+                  登録する
+                </Button>
               </Dialog.Footer>
               <Dialog.CloseTrigger asChild>
                 <CloseButton size="sm" />
