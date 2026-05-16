@@ -2,7 +2,10 @@ import { Record } from "../domain/record";
 import { supabase } from "./supabaseClient";
 
 export const getAllRecords = async (): Promise<Record[]> => {
-  const { data, error } = await supabase.from("study-record").select("*");
+  const { data, error } = await supabase
+    .from("study-record")
+    .select("*")
+    .order("id", { ascending: false });
   if (error) {
     console.error("Error fetching records:", error);
     return [];

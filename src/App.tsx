@@ -6,7 +6,10 @@ import {
   Field,
   Input,
   Portal,
+  HStack,
+  Spacer,
 } from "@chakra-ui/react";
+import { TfiTime } from "react-icons/tfi";
 import "./App.css";
 import {
   getAllRecords,
@@ -15,6 +18,7 @@ import {
 } from "./utils/supabaseFunctions";
 import { Record } from "./domain/record";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { IoBookOutline } from "react-icons/io5";
 
 type Inputs = {
   title: string;
@@ -92,32 +96,62 @@ function App() {
     <>
       <Dialog.Root open={isOpen} onOpenChange={({ open }) => setIsOpen(open)}>
         <div className="App">
-          <h1 data-testid="title">学習記録一覧</h1>
+          <h1 data-testid="title" style={{ fontWeight: "bold" }}>
+            学習記録一覧
+          </h1>
           <p>合計学習時間：{totalTime}/1000(h)</p>
 
-          <p> 最近の記録</p>
-          <Dialog.Trigger asChild>
-            <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
-              新規登録
-            </Button>
-          </Dialog.Trigger>
+          <HStack justify="space-between" align="center" mb={4} w="100%">
+            <HStack style={{ fontSize: "1.2rem" }}>
+              <IoBookOutline />
+              <p style={{ margin: 0, fontWeight: "bold" }}> 最近の記録</p>
+            </HStack>
+            <Dialog.Trigger asChild>
+              <Button size="sm" marginRight={2} onClick={() => setIsOpen(true)}>
+                新規登録
+              </Button>
+            </Dialog.Trigger>
+          </HStack>
 
-          <div>
+          {/* <div>
             <p>入力されている学習内容:{studyTitle}</p>
             <p>入力されている時間:{studyTime}時間</p>
-          </div>
+          </div> */}
           {records.map((record, index) => (
-            <div key={index} data-testid="study-record">
-              <p>
-                {record.title} {record.time}時間
-              </p>
-              <Button
-                data-testid="button-delete"
-                onClick={() => onClickDelete(record.id)}
+            <HStack
+              key={index}
+              data-testid="study-record"
+              align="center" // 上下の中心線を揃える
+              borderBottom="1px solid" // （お好みで）レコードの区切り線
+              borderColor="gray.200" // （お好みで）線の色
+              p={3} // （お好みで）上下左右の余白
+              w="100%" // 横幅いっぱいに広げる
+              gap={4} // テキストとボタンの間のスペース
+            >
+              <div
+                style={{ flexShrink: 0, display: "flex", alignItems: "center" }}
               >
-                削除
-              </Button>
-            </div>
+                <TfiTime />
+              </div>
+              <p style={{ margin: 0 }}>{record.title}</p>
+              <Spacer />
+              <p style={{ margin: 0, whiteSpace: "nowrap" }}>
+                {record.time}時間
+              </p>
+              <div style={{ whiteSpace: "nowrap" }}>
+                <Button size="sm" onClick={() => onClickDelete(record.id)}>
+                  編集
+                </Button>
+                <Button
+                  data-testid="button-delete"
+                  size="sm"
+                  marginLeft={1}
+                  onClick={() => onClickDelete(record.id)}
+                >
+                  削除
+                </Button>
+              </div>
+            </HStack>
           ))}
           {/* <button data-testid="button-add" onClick={onClickAdd}>
             登録 過去
@@ -189,7 +223,7 @@ function App() {
                 <Dialog.ActionTrigger asChild>
                   <Button variant="outline">キャンセル</Button>
                 </Dialog.ActionTrigger>
-                <Button type="submit" form="study-form">
+                <Button type="submit" form="study-form" colorPalette="blue">
                   登録する
                 </Button>
               </Dialog.Footer>
