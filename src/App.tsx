@@ -140,7 +140,7 @@ function App() {
                 <Dialog.Content>
                   <Dialog.Header>
                     <Dialog.Title>
-                      {editingRecord ? "編集" : "新規登録"}
+                      {editingRecord ? "記録編集" : "新規登録"}
                     </Dialog.Title>
                   </Dialog.Header>
                   <Dialog.Body>

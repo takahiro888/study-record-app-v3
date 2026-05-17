@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import {
   getAllRecords,
   addRecord,
+  updateRecord,
   deleteRecord,
 } from "@/utils/supabaseFunctions";
 
@@ -14,12 +15,13 @@ vi.mock("@/utils/supabaseFunctions", () => ({
   getAllRecords: vi.fn(),
   addRecord: vi.fn(),
   deleteRecord: vi.fn(),
+  updateRecord: vi.fn(),
 }));
 
 // 型キャスト(TypeScriptにモック関数だと認識させる)
 const mockGetAllRecords = getAllRecords as ReturnType<typeof vi.fn>;
 const mockAddRecord = addRecord as ReturnType<typeof vi.fn>;
-// const mockUpdateRecord = updateRecord as ReturnType<typeof vi.fn>;
+const mockUpdateRecord = updateRecord as ReturnType<typeof vi.fn>;
 const mockDeleteRecord = deleteRecord as ReturnType<typeof vi.fn>;
 
 // テスト用のサンプルデータ
@@ -41,6 +43,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockGetAllRecords.mockResolvedValue(mockRecords);
   mockAddRecord.mockResolvedValue(undefined);
+  mockUpdateRecord.mockResolvedValue(undefined);
   mockDeleteRecord.mockResolvedValue(undefined);
 });
 
@@ -71,7 +74,9 @@ describe("App", () => {
   it("新規登録ボタンが表示される", async () => {
     renderApp();
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: "新規登録" })).toBeInTheDocument(),
+      expect(
+        screen.getByRole("button", { name: "新規登録" }),
+      ).toBeInTheDocument(),
     );
   });
 
@@ -99,7 +104,9 @@ describe("App", () => {
     //学習内容だけ入力
     await userEvent.type(screen.getByLabelText("学習内容"), "React");
     // 時間フィールドをクリア（初期値0を消す）
-    fireEvent.change(screen.getByLabelText("学習時間"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("学習時間"), {
+      target: { value: "" },
+    });
     await userEvent.click(screen.getByText("登録する"));
     await waitFor(() =>
       expect(screen.getByText("時間の入力は必須です")).toBeInTheDocument(),
@@ -141,5 +148,42 @@ describe("App", () => {
     const deleteButtons = screen.getAllByTestId("button-delete");
     await userEvent.click(deleteButtons[0]);
     await waitFor(() => expect(mockDeleteRecord).toHaveBeenCalledWith(1));
+  });
+
+  it("モーダルのタイトルが「記録編集」である", async () => {
+    renderApp();
+    await waitFor(() => screen.getByText("React勉強"));
+
+    // 「編集」ボタンはrecordごとに複数あるので getAllByRole で取得
+    const editButtons = screen.getAllByRole("button", { name: "編集" });
+    await userEvent.click(editButtons[0]);
+
+    expect(
+      screen.getByRole("heading", { name: "記録編集" }),
+    ).toBeInTheDocument();
+  });
+
+  it("編集して登録すると更新される", async () => {
+    renderApp();
+    await waitFor(() => screen.getByText("React勉強"));
+
+    const editButtons = screen.getAllByRole("button", { name: "編集" });
+    await userEvent.click(editButtons[0]); // id:1「React勉強」を編集
+
+    // タイトルをクリアして新しい値を入力
+    const titleInput = screen.getByLabelText("学習内容");
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, "React上級");
+
+    // 時間を変更（number inputはfireEvent.changeで設定）
+    fireEvent.change(screen.getByLabelText("学習時間"), {
+      target: { value: "5" },
+    });
+
+    await userEvent.click(screen.getByText("更新する"));
+
+    await waitFor(() =>
+      expect(mockUpdateRecord).toHaveBeenCalledWith(1, "React上級", "5"),
+    );
   });
 });
