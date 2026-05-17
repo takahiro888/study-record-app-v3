@@ -7,10 +7,9 @@ import {
   Input,
   Portal,
   HStack,
-  Spacer,
   VStack,
 } from "@chakra-ui/react";
-import { TfiTime } from "react-icons/tfi";
+
 import "./App.css";
 import {
   getAllRecords,
@@ -21,6 +20,7 @@ import {
 import { Record } from "./domain/record";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { IoBookOutline } from "react-icons/io5";
+import { RecordItem } from "./components/molecules/RecordItem";
 
 type Inputs = {
   title: string;
@@ -221,44 +221,12 @@ function App() {
           boxShadow="sm" // お好みで：うっすらと影をつける
         >
           {records.map((record, index) => (
-            <HStack
+            <RecordItem
               key={index}
-              data-testid="study-record"
-              align="center" // 上下の中心線を揃える
-              borderBottom="1px solid" // （お好みで）レコードの区切り線
-              borderColor="gray.200" // （お好みで）線の色
-              p={3} // （お好みで）上下左右の余白
-              w="100%" // 横幅いっぱいに広げる
-              gap={4} // テキストとボタンの間のスペース
-            >
-              <div
-                style={{
-                  flexShrink: 0,
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <TfiTime />
-              </div>
-              <p style={{ margin: 0 }}>{record.title}</p>
-              <Spacer />
-              <p style={{ margin: 0, whiteSpace: "nowrap" }}>
-                {record.time}時間
-              </p>
-              <div style={{ whiteSpace: "nowrap" }}>
-                <Button size="sm" onClick={() => onClickEdit(record)}>
-                  編集
-                </Button>
-                <Button
-                  data-testid="button-delete"
-                  size="sm"
-                  marginLeft={1}
-                  onClick={() => onClickDelete(record.id)}
-                >
-                  削除
-                </Button>
-              </div>
-            </HStack>
+              record={record}
+              onClickEdit={onClickEdit}
+              onClickDelete={onClickDelete}
+            />
           ))}
         </VStack>
         {/* <button data-testid="button-add" onClick={onClickAdd}>
