@@ -15,6 +15,7 @@ import "./App.css";
 import {
   getAllRecords,
   addRecord,
+  updateRecord,
   deleteRecord,
 } from "./utils/supabaseFunctions";
 import { Record } from "./domain/record";
@@ -27,6 +28,7 @@ type Inputs = {
 };
 function App() {
   const [records, setRecords] = useState<Record[]>([]);
+  const [editingRecord, setEditingRecord] = useState<Record | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
@@ -47,13 +49,18 @@ function App() {
     formState: { errors },
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await addRecord(data.title, data.time);
+    if (editingRecord === null) {
+      await addRecord(data.title, data.time);
+    } else {
+      await updateRecord(editingRecord.id, data.title, data.time);
+    }
     const updatedRecords = await getAllRecords();
     setRecords(updatedRecords);
     reset();
     setIsOpen(false);
     setError("");
   };
+
   // const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
   //   setStudyTitle(event.target.value);
   // const onChangeTime = (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -76,6 +83,16 @@ function App() {
   //   setError("");
   // };
 
+  const onClickNew = () => {
+    setEditingRecord(null);
+    reset({ title: "", time: 0 });
+    setIsOpen(true);
+  };
+  const onClickEdit = (record: Record) => {
+    setEditingRecord(record);
+    reset({ title: record.title, time: record.time });
+    setIsOpen(true);
+  };
   const onClickDelete = async (id: number) => {
     await deleteRecord(id);
     const newRecords = records.filter((record) => record.id !== id);
@@ -106,11 +123,9 @@ function App() {
             open={isOpen}
             onOpenChange={({ open }) => setIsOpen(open)}
           >
-            <Dialog.Trigger asChild>
-              <Button size="sm" marginRight={2} onClick={() => setIsOpen(true)}>
-                新規登録
-              </Button>
-            </Dialog.Trigger>
+            <Button size="sm" marginRight={2} onClick={() => onClickNew()}>
+              新規登録
+            </Button>
 
             {/* <div>
             <p>入力されている学習内容:{studyTitle}</p>
@@ -124,7 +139,9 @@ function App() {
               <Dialog.Positioner>
                 <Dialog.Content>
                   <Dialog.Header>
-                    <Dialog.Title>新規登録</Dialog.Title>
+                    <Dialog.Title>
+                      {editingRecord ? "編集" : "新規登録"}
+                    </Dialog.Title>
                   </Dialog.Header>
                   <Dialog.Body>
                     {/* <div>
@@ -181,7 +198,7 @@ function App() {
                       <Button variant="outline">キャンセル</Button>
                     </Dialog.ActionTrigger>
                     <Button type="submit" form="study-form" colorPalette="blue">
-                      登録する
+                      {editingRecord ? "更新する" : "登録する"}
                     </Button>
                   </Dialog.Footer>
                   <Dialog.CloseTrigger asChild>
@@ -229,7 +246,7 @@ function App() {
                 {record.time}時間
               </p>
               <div style={{ whiteSpace: "nowrap" }}>
-                <Button size="sm" onClick={() => onClickDelete(record.id)}>
+                <Button size="sm" onClick={() => onClickEdit(record)}>
                   編集
                 </Button>
                 <Button

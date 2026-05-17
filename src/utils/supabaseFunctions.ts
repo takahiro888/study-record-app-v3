@@ -17,6 +17,13 @@ export const addRecord = async (title: string, time: number) => {
   await supabase.from("study-record").insert({ title: title, time: time });
 };
 
+export const updateRecord = async (id: number, title: string, time: number) => {
+  await supabase
+    .from("study-record")
+    .update({ title: title, time: time })
+    .eq("id", id);
+};
+
 export const deleteRecord = async (id: number) => {
   await supabase.from("study-record").delete().eq("id", id);
 };
