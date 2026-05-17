@@ -27,8 +27,6 @@ type Inputs = {
 };
 function App() {
   const [records, setRecords] = useState<Record[]>([]);
-  const [studyTitle, setStudyTitle] = useState("");
-  const [studyTime, setStudyTime] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
@@ -54,8 +52,6 @@ function App() {
     setRecords(updatedRecords);
     reset();
     setIsOpen(false);
-    setStudyTitle("");
-    setStudyTime(0);
     setError("");
   };
   // const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
