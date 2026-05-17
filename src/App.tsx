@@ -61,28 +61,6 @@ function App() {
     setError("");
   };
 
-  // const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
-  //   setStudyTitle(event.target.value);
-  // const onChangeTime = (event: React.ChangeEvent<HTMLInputElement>) =>
-  //   setStudyTime(Number(event.target.value));
-
-  // const onClickAdd = async () => {
-  //   if (studyTitle === "" || studyTime === 0) {
-  //     setError("入力されていない項目があります");
-  //     return;
-  //   }
-
-  //   await addRecord(studyTitle, Number(studyTime));
-
-  //   // データベースから最新のデータを再取得
-  //   const updatedRecords = await getAllRecords();
-  //   setRecords(updatedRecords);
-
-  //   setStudyTitle("");
-  //   setStudyTime(0);
-  //   setError("");
-  // };
-
   const onClickNew = () => {
     setEditingRecord(null);
     reset({ title: "", time: 0 });
@@ -127,13 +105,7 @@ function App() {
               新規登録
             </Button>
 
-            {/* <div>
-            <p>入力されている学習内容:{studyTitle}</p>
-            <p>入力されている時間:{studyTime}時間</p>
-          </div> */}
-
             {/* モーダル */}
-
             <Portal>
               <Dialog.Backdrop />
               <Dialog.Positioner>
@@ -144,24 +116,6 @@ function App() {
                     </Dialog.Title>
                   </Dialog.Header>
                   <Dialog.Body>
-                    {/* <div>
-                  <p>◾️学習内容</p>
-                  <input
-                    data-testid="input-title"
-                    value={studyTitle}
-                    onChange={onChangeTitle}
-                  />
-                </div>
-                <div>
-                  <p>◾️学習記録</p>
-                  <input
-                    data-testid="input-time"
-                    type="number"
-                    value={studyTime}
-                    onChange={onChangeTime}
-                  />
-                  時間
-                </div> */}
                     <form id="study-form" onSubmit={handleSubmit(onSubmit)}>
                       <Field.Root invalid={!!errors.title}>
                         <Field.Label>学習内容</Field.Label>
@@ -229,9 +183,6 @@ function App() {
             />
           ))}
         </VStack>
-        {/* <button data-testid="button-add" onClick={onClickAdd}>
-            登録 過去
-          </button> */}
 
         {error && (
           <p style={{ color: "red" }} data-testid="error-message">
