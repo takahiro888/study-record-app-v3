@@ -29,12 +29,12 @@ export const RecordItem = ({ record, onClickEdit, onClickDelete }: Props) => {
         <TfiTime />
       </div>
       <VStack align="start" gap={0}>
-        <p style={{ margin: 0 }}>{record.title}</p>
+        <p style={{ margin: 0, color: "black" }}>{record.title}</p>
         {record.created_at && (
           <HStack gap={1}>
             <LuCalendar size={12} />
             <Text fontSize="xs" color="gray.500">
-              {new Date(record.created_at).toLocaleDateString("ja-JP",{
+              {new Date(record.created_at).toLocaleDateString("ja-JP", {
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit",
@@ -49,13 +49,19 @@ export const RecordItem = ({ record, onClickEdit, onClickDelete }: Props) => {
       <Spacer />
       <p style={{ margin: 0, whiteSpace: "nowrap" }}>{record.time}時間</p>
       <div style={{ whiteSpace: "nowrap" }}>
-        <Button size="sm" onClick={() => onClickEdit(record)}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onClickEdit(record)}
+        >
           編集
         </Button>
         <Button
           data-testid="button-delete"
           size="sm"
           marginLeft={1}
+          colorPalette="red"
+          variant="outline"
           onClick={() => onClickDelete(record.id)}
         >
           削除

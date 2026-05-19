@@ -21,6 +21,7 @@ import { Record } from "./domain/record";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { IoBookOutline } from "react-icons/io5";
 import { RecordItem } from "./components/molecules/RecordItem";
+import { LuPlus } from "react-icons/lu";
 
 type Inputs = {
   title: string;
@@ -101,7 +102,14 @@ function App() {
             open={isOpen}
             onOpenChange={({ open }) => setIsOpen(open)}
           >
-            <Button size="sm" marginRight={2} onClick={() => onClickNew()}>
+            <Button
+              size="sm"
+              marginRight={2}
+              colorPalette="green"
+              borderRadius="full"
+              onClick={() => onClickNew()}
+            >
+              <LuPlus />
               新規登録
             </Button>
 
@@ -111,7 +119,7 @@ function App() {
               <Dialog.Positioner>
                 <Dialog.Content>
                   <Dialog.Header>
-                    <Dialog.Title>
+                    <Dialog.Title style={{ fontWeight: "bold" }}>
                       {editingRecord ? "記録編集" : "新規登録"}
                     </Dialog.Title>
                   </Dialog.Header>
@@ -151,7 +159,11 @@ function App() {
                     <Dialog.ActionTrigger asChild>
                       <Button variant="outline">キャンセル</Button>
                     </Dialog.ActionTrigger>
-                    <Button type="submit" form="study-form" colorPalette="blue">
+                    <Button
+                      type="submit"
+                      form="study-form"
+                      colorPalette="green"
+                    >
                       {editingRecord ? "更新する" : "登録する"}
                     </Button>
                   </Dialog.Footer>
