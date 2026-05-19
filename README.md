@@ -1,74 +1,86 @@
-# React + TypeScript + Vite
+# 学習記録アプリ (study-record-app-v3)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+学習内容と学習時間を記録・管理するWebアプリです。
 
-Currently, two official plugins are available:
+## 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 学習記録の一覧表示
+- 学習記録の新規登録・編集・削除
+- 合計学習時間の表示
+- フォームバリデーション
 
-## React Compiler
+## 技術スタック
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| カテゴリ       | 技術                     |
+| -------------- | ------------------------ |
+| フロントエンド | React 19 / TypeScript    |
+| ビルドツール   | Vite                     |
+| UI             | Chakra UI v3             |
+| フォーム       | react-hook-form          |
+| バックエンド   | Supabase                 |
+| テスト         | Vitest / Testing Library |
+| デプロイ       | Firebase Hosting         |
+| CI/CD          | GitHub Actions           |
 
-## Expanding the ESLint configuration
+## セットアップ
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. 依存パッケージのインストール
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. 環境変数の設定
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+`.env` ファイルをルートに作成し、以下を設定してください。
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
-# study-record-app-v3
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 3. Supabase テーブルの作成
+
+`study-record` テーブルを以下のカラムで作成してください。
+
+| カラム名   | 型                 |
+| ---------- | ------------------ |
+| id         | int8 (Primary Key) |
+| title      | text               |
+| time       | int8               |
+| created_at | timestamptz        |
+
+## コマンド
+
+```bash
+# 開発サーバー起動
+npm run dev
+
+# ビルド
+npm run build
+
+# テスト実行
+npm run test
+
+# プレビュー
+npm run preview
+```
+
+## プロジェクト構成
+
+```
+src/
+  components/
+    molecules/
+      RecordItem.tsx     # レコード一覧の各行
+    ui/                  # Chakra UI カスタムコンポーネント
+  domain/
+    record.ts            # Record ドメインモデル
+  tests/
+    App.test.tsx         # Vitestテスト
+  utils/
+    supabaseClient.ts    # Supabaseクライアント
+    supabaseFunctions.ts # CRUD操作
+  App.tsx
+  main.tsx
+```
