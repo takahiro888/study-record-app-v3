@@ -1,6 +1,7 @@
 import { Record } from "../../domain/record";
 import { TfiTime } from "react-icons/tfi";
-import { Button, HStack, Spacer } from "@chakra-ui/react";
+import { Button, HStack, Spacer, VStack, Text } from "@chakra-ui/react";
+import { LuCalendar } from "react-icons/lu";
 type Props = {
   record: Record;
   onClickEdit: (record: Record) => void;
@@ -27,7 +28,24 @@ export const RecordItem = ({ record, onClickEdit, onClickDelete }: Props) => {
       >
         <TfiTime />
       </div>
-      <p style={{ margin: 0 }}>{record.title}</p>
+      <VStack align="start" gap={0}>
+        <p style={{ margin: 0 }}>{record.title}</p>
+        {record.created_at && (
+          <HStack gap={1}>
+            <LuCalendar size={12} />
+            <Text fontSize="xs" color="gray.500">
+              {new Date(record.created_at).toLocaleDateString("ja-JP",{
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
+          </HStack>
+        )}
+      </VStack>
+
       <Spacer />
       <p style={{ margin: 0, whiteSpace: "nowrap" }}>{record.time}時間</p>
       <div style={{ whiteSpace: "nowrap" }}>
