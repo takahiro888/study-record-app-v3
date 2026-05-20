@@ -22,6 +22,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { IoBookOutline } from "react-icons/io5";
 import { RecordItem } from "./components/molecules/RecordItem";
 import { LuPlus } from "react-icons/lu";
+import { Toaster, toaster } from "./components/ui/toaster";
 
 type Inputs = {
   title: string;
@@ -52,8 +53,10 @@ function App() {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (editingRecord === null) {
       await addRecord(data.title, data.time);
+      toaster.create({ title: "学習記録を追加しました。", type: "success" });
     } else {
       await updateRecord(editingRecord.id, data.title, data.time);
+      toaster.create({ title: "学習記録を更新しました。", type: "success" });
     }
     const updatedRecords = await getAllRecords();
     setRecords(updatedRecords);
@@ -76,6 +79,7 @@ function App() {
     await deleteRecord(id);
     const newRecords = records.filter((record) => record.id !== id);
     setRecords(newRecords);
+    toaster.create({ title: "学習記録を削除しました", type: "error" });
   };
   const totalTime = records.reduce((total, record) => {
     return total + record.time;
@@ -202,6 +206,7 @@ function App() {
           </p>
         )}
       </div>
+      <Toaster />
     </>
   );
 }
